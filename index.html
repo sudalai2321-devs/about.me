@@ -15,6 +15,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.globe.min.js"></script>
 
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap" rel="stylesheet">
+
     <!-- Tailwind Config for Custom Colors/Fonts -->
     <script>
         tailwind.config = {
@@ -24,6 +27,7 @@
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
                         mono: ['Fira Code', 'monospace'],
+                        poppins: ['Poppins', 'sans-serif'],
                     },
                     animation: {
                         'pulse-slow': 'pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite',
@@ -72,6 +76,123 @@
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
         }
+
+        /* --- FIXED Mobile Navigation Styles --- */
+        #active {
+            display: none;
+        }
+
+        /* The Menu Overlay - Compact Top-Right Bubble */
+        .wrapper {
+            position: fixed;
+            top: 10px;
+            right: 20px;
+            height: auto;
+            min-height: 300px;
+            width: 200px;
+            background: linear-gradient(-135deg, #c850c0, #4158d0); 
+            clip-path: circle(25px at calc(100% - 25px) 25px);
+            transition: all 0.5s cubic-bezier(0.86, 0, 0.07, 1);
+            z-index: 9998;
+            opacity: 0;
+            pointer-events: none;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+        }
+
+        #active:checked ~ .wrapper {
+            clip-path: circle(150% at calc(100% - 25px) 25px);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* The Menu Button */
+        .menu-btn {
+            position: fixed;
+            right: 20px;
+            top: 10px;
+            z-index: 9999;
+            height: 50px;
+            width: 50px;
+            text-align: center;
+            line-height: 50px;
+            border-radius: 50%;
+            color: #fff;
+            cursor: pointer;
+            background: linear-gradient(-135deg, #c850c0, #4158d0);
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        #active:checked ~ .menu-btn {
+            background: #fff;
+            color: #4158d0;
+        }
+
+        .menu-btn .close-icon { display: none; }
+        #active:checked ~ .menu-btn .menu-icon { display: none; }
+        #active:checked ~ .menu-btn .close-icon { display: block; }
+
+        /* Menu List Items */
+        .wrapper ul {
+            position: absolute;
+            top: 55%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            list-style: none;
+            text-align: center;
+            width: 100%;
+        }
+
+        .wrapper ul li {
+            margin: 10px 0;
+        }
+
+        .wrapper ul li a {
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            padding: 5px 20px;
+            color: #fff;
+            position: relative;
+            line-height: 30px;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            display: inline-block;
+        }
+
+        .wrapper ul li a:after {
+            position: absolute;
+            content: "";
+            background: #fff;
+            width: 100%;
+            height: 30px;
+            left: 0;
+            top: 0;
+            border-radius: 50px;
+            transform: scaleY(0);
+            z-index: -1;
+            transition: transform 0.3s ease;
+            opacity: 0;
+        }
+
+        .wrapper ul li a:hover:after {
+            transform: scaleY(1);
+            opacity: 1;
+        }
+
+        .wrapper ul li a:hover {
+            color: #4158d0;
+        }
+        
+        @media (min-width: 768px) {
+            .menu-btn, .wrapper {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body class="font-sans antialiased transition-colors duration-500 overflow-x-hidden bg-slate-50 text-slate-900 dark:bg-[#020205] dark:text-white selection:bg-fuchsia-500 selection:text-white">
@@ -84,14 +205,14 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
                 <!-- Logo -->
-                <div class="flex items-center space-x-3 cursor-pointer group" onclick="scrollToSection('home')">
+                <div class="flex items-center space-x-3 cursor-pointer group z-50" onclick="scrollToSection('home')">
                     <div class="relative w-10 h-10 flex items-center justify-center">
                         <div class="absolute inset-0 bg-gradient-to-r from-cyan-500 via-violet-500 to-fuchsia-500 rounded-lg animate-pulse-slow blur-sm"></div>
                         <div class="relative w-full h-full rounded-lg flex items-center justify-center border bg-white border-slate-200 dark:bg-black dark:border-white/10 transition-colors">
                             <span class="font-black text-2xl bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-fuchsia-400">S</span>
                         </div>
                     </div>
-                    <span class="font-bold text-xl tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-gray-400 group-hover:to-fuchsia-400 transition-all">SUDALAI</span>
+                    <span class="font-bold text-xl tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-gray-400 group-hover:to-fuchsia-400 transition-all">ABOUT.ME</span>
                 </div>
 
                 <!-- Desktop Menu -->
@@ -111,34 +232,35 @@
                     </button>
                 </div>
 
-                <!-- Mobile Menu Button -->
-                <div class="md:hidden flex items-center gap-4">
-                    <button id="themeToggleMobile" class="p-2 rounded-full bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-yellow-300">
+                <!-- Mobile Header Elements -->
+                <div class="md:hidden flex items-center gap-4 h-full">
+                    <button id="themeToggleMobile" class="p-2 mr-16 rounded-full bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-yellow-300 z-40 relative transition-transform active:scale-95">
                         <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
                         <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
-                    </button>
-                    <button id="mobileMenuBtn" class="p-2 text-slate-600 hover:text-slate-900 dark:text-gray-300 dark:hover:text-white">
-                        <i data-lucide="menu" class="w-7 h-7"></i>
                     </button>
                 </div>
             </div>
         </div>
-
-        <!-- Mobile Menu Dropdown -->
-        <div id="mobileMenu" class="hidden md:hidden border-b bg-white border-slate-200 dark:bg-[#050510] dark:border-white/10 transition-colors">
-            <div class="px-4 pt-2 pb-6 space-y-2">
-                <a href="#home" class="block w-full text-left px-4 py-3 rounded-lg text-base font-medium text-slate-600 hover:bg-slate-50 dark:text-gray-300 dark:hover:bg-white/5">Home</a>
-                <a href="#about" class="block w-full text-left px-4 py-3 rounded-lg text-base font-medium text-slate-600 hover:bg-slate-50 dark:text-gray-300 dark:hover:bg-white/5">About</a>
-                <a href="#skills" class="block w-full text-left px-4 py-3 rounded-lg text-base font-medium text-slate-600 hover:bg-slate-50 dark:text-gray-300 dark:hover:bg-white/5">Skills</a>
-                <a href="#projects" class="block w-full text-left px-4 py-3 rounded-lg text-base font-medium text-slate-600 hover:bg-slate-50 dark:text-gray-300 dark:hover:bg-white/5">Projects</a>
-                <a href="#contact" class="block w-full text-left px-4 py-3 rounded-lg text-base font-medium text-slate-600 hover:bg-slate-50 dark:text-gray-300 dark:hover:bg-white/5">Contact</a>
-            </div>
-        </div>
     </nav>
+
+    <!-- Mobile Nav Wrapper -->
+    <input type="checkbox" id="active">
+    <label for="active" class="menu-btn">
+        <i data-lucide="menu" class="menu-icon w-6 h-6"></i>
+        <i data-lucide="x" class="close-icon w-6 h-6"></i>
+    </label>
+    <div class="wrapper">
+        <ul>
+            <li><a href="#home" onclick="closeMobileMenu()">Home</a></li>
+            <li><a href="#about" onclick="closeMobileMenu()">About</a></li>
+            <li><a href="#skills" onclick="closeMobileMenu()">Skills</a></li>
+            <li><a href="#projects" onclick="closeMobileMenu()">Projects</a></li>
+            <li><a href="#contact" onclick="closeMobileMenu()">Contact</a></li>
+        </ul>
+    </div>
 
     <!-- Hero Section -->
     <section id="home" class="min-h-screen flex items-center justify-center relative pt-20 overflow-hidden">
-        <!-- Overlay for better text readability -->
         <div class="absolute inset-0 bg-gradient-to-b from-transparent via-slate-50/50 to-slate-50 dark:via-[#020205]/50 dark:to-[#020205] pointer-events-none"></div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center flex flex-col items-center w-full">
@@ -244,7 +366,7 @@
                         <div class="flex items-center gap-5 mb-8 border-b pb-6 border-slate-100 dark:border-white/10">
                             <div class="w-24 h-24 rounded-full p-[2px] bg-gradient-to-tr from-cyan-400 to-fuchsia-500 flex-shrink-0">
                                 <div class="w-full h-full rounded-full flex items-center justify-center overflow-hidden bg-white dark:bg-gray-900">
-                                    <img src="https://cdn.discordapp.com/attachments/1096506034706722866/1446127821322977381/WhatsApp_Image_2025-12-04_at_6.45.18_PM.jpeg?ex=6932dafc&is=6931897c&hm=32658e9d4783f84d20b3c7196ab0163b18afa1183f61c04b8a32d37bd49629bb&" alt="Sudalai S" class="w-full h-full object-cover">
+                                    <img src="https://media.discordapp.net/attachments/1096506034706722866/1446127821322977381/WhatsApp_Image_2025-12-04_at_6.45.18_PM.jpeg?ex=6932dafc&is=6931897c&hm=32658e9d4783f84d20b3c7196ab0163b18afa1183f61c04b8a32d37bd49629bb&=&format=webp" alt="Sudalai S" class="w-full h-full object-cover">
                                 </div>
                             </div>
                             <div>
@@ -348,9 +470,30 @@
                         </a>
                     </div>
 
-                    <div class="flex justify-center space-x-6">
-                        <a href="#" class="p-4 rounded-full transition-all hover:scale-110 bg-slate-100 text-slate-500 hover:text-slate-900 hover:bg-slate-200 dark:bg-white/5 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/10"><i data-lucide="github" class="w-6 h-6"></i></a>
-                        <a href="#" class="p-4 rounded-full transition-all hover:scale-110 bg-slate-100 text-slate-500 hover:text-blue-600 hover:bg-slate-200 dark:bg-white/5 dark:text-gray-400 dark:hover:text-blue-400 dark:hover:bg-white/10"><i data-lucide="linkedin" class="w-6 h-6"></i></a>
+                    <!-- Social Media Links -->
+                    <div class="flex justify-center gap-6 flex-wrap">
+                        <!-- GitHub -->
+                        <a href="https://github.com/sudalai2321-devs" target="_blank" class="p-4 rounded-full transition-all hover:scale-110 bg-slate-100 text-slate-500 hover:text-slate-900 hover:bg-slate-200 dark:bg-white/5 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/10 group" title="GitHub">
+                            <i data-lucide="github" class="w-6 h-6"></i>
+                        </a>
+                        
+                        <!-- LinkedIn -->
+                        <a href="https://www.linkedin.com/in/sudalai-s-dev2321/" target="_blank" class="p-4 rounded-full transition-all hover:scale-110 bg-slate-100 text-slate-500 hover:text-blue-700 hover:bg-slate-200 dark:bg-white/5 dark:text-gray-400 dark:hover:text-blue-500 dark:hover:bg-white/10 group" title="LinkedIn">
+                            <i data-lucide="linkedin" class="w-6 h-6"></i>
+                        </a>
+
+                        <!-- Instagram -->
+                        <a href="https://www.instagram.com/peace_maker_2109/?next=%2F" target="_blank" class="p-4 rounded-full transition-all hover:scale-110 bg-slate-100 text-slate-500 hover:text-pink-600 hover:bg-slate-200 dark:bg-white/5 dark:text-gray-400 dark:hover:text-pink-500 dark:hover:bg-white/10 group" title="Instagram">
+                            <i data-lucide="instagram" class="w-6 h-6"></i>
+                        </a>
+
+                        <!-- Discord Group -->
+                        <a href="https://discord.gg/pwfzXC5MyM" target="_blank" class="p-4 rounded-full transition-all hover:scale-110 bg-slate-100 text-slate-500 hover:text-indigo-600 hover:bg-slate-200 dark:bg-white/5 dark:text-gray-400 dark:hover:text-indigo-500 dark:hover:bg-white/10 group flex items-center justify-center" title="Discord Group">
+                            <!-- Use Discord SVG directly as Lucide lacks the brand logo -->
+                            <svg class="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 127.14 96.36">
+                                <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.11,77.11,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22c.63-23.28-3.67-47.06-18.9-72.15ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/>
+                            </svg>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -522,6 +665,11 @@
             }
         }
 
+        // Mobile Menu Helper
+        function closeMobileMenu() {
+            document.getElementById('active').checked = false;
+        }
+
         function addMessage(text, sender) {
             const chatMessages = document.getElementById('chatMessages');
             const div = document.createElement('div');
@@ -560,16 +708,9 @@
             document.getElementById('themeToggle').addEventListener('click', toggleTheme);
             document.getElementById('themeToggleMobile').addEventListener('click', toggleTheme);
             
-            // Mobile Menu
-            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-            const mobileMenu = document.getElementById('mobileMenu');
-            mobileMenuBtn.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-            document.querySelectorAll('#mobileMenu a').forEach(link => {
-                link.addEventListener('click', () => {
-                    mobileMenu.classList.add('hidden');
-                });
+            // Resize Listener
+            window.addEventListener('resize', () => {
+                if (vantaEffect) vantaEffect.resize();
             });
 
             // Typing Effect
@@ -624,9 +765,9 @@
                         email: "sudalai2321@gmail.com",
                         phone: "9791557351",
                         education: "B.Tech in Information Technology at Dhanalakshmi Srinivasan University (Semester 3, Admission 2024-2025)",
-                        skills: "React, Python, Web Development, Leadership, Event Management",
+                        skills: "Python (Advanced Diploma), C, C++, Lua Scripting (MTA), SQL, MTA Server Management, HTML/CSS, Communication, Leadership",
                         location: "Thoothukudi, Tamil Nadu, India",
-                        about: "I am a passionate developer, Event Organizer, and the Secretary of the IT Department. I love building interactive web applications and organizing tech events."
+                        about: "I am a passionate developer, Event Organizer, and the Secretary of the IT Department. I specialize in Python, MTA Game Development (Lua & Server Management), and SQL."
                     };
 
                     const systemPrompt = `You are 'Talk with Sudalai', a highly intelligent and witty AI assistant on Sudalai S's personal portfolio website.
@@ -671,13 +812,13 @@
 
             // Data Injection (Skills & Projects)
             const skillsData = [
-                { name: 'React', icon: 'code', color: 'text-cyan-500', bg: 'bg-cyan-500' },
-                { name: 'JavaScript', icon: 'terminal', color: 'text-yellow-500', bg: 'bg-yellow-500' },
                 { name: 'Python', icon: 'cpu', color: 'text-blue-500', bg: 'bg-blue-500' },
-                { name: 'Tailwind', icon: 'globe', color: 'text-teal-500', bg: 'bg-teal-500' },
-                { name: 'Node.js', icon: 'zap', color: 'text-green-500', bg: 'bg-green-500' },
-                { name: 'Git', icon: 'github', color: 'text-orange-500', bg: 'bg-orange-500' },
-                { name: 'Event Org.', icon: 'calendar', color: 'text-fuchsia-500', bg: 'bg-fuchsia-500' },
+                { name: 'C / C++', icon: 'file-code', color: 'text-indigo-500', bg: 'bg-indigo-500' },
+                { name: 'Lua Script', icon: 'gamepad-2', color: 'text-purple-500', bg: 'bg-purple-500' },
+                { name: 'MTA Server', icon: 'server', color: 'text-green-500', bg: 'bg-green-500' },
+                { name: 'SQL', icon: 'database', color: 'text-sky-500', bg: 'bg-sky-500' },
+                { name: 'HTML / CSS', icon: 'globe', color: 'text-orange-500', bg: 'bg-orange-500' },
+                { name: 'Communication', icon: 'message-square', color: 'text-pink-500', bg: 'bg-pink-500' },
                 { name: 'Leadership', icon: 'award', color: 'text-red-500', bg: 'bg-red-500' }
             ];
 
@@ -700,16 +841,53 @@
             }
 
             const projectsData = [
-                { title: "University Portal", desc: "Centralized academic dashboard for grades & attendance tracking.", tags: ["React", "Firebase", "Tailwind"], gradient: "from-cyan-600 to-blue-600" },
-                { title: "Talk with Sudalai", desc: "The intelligent AI portfolio assistant you are using right now!", tags: ["Gemini AI", "React", "Animation"], gradient: "from-fuchsia-600 to-pink-600" },
-                { title: "Event Horizon", desc: "Digital management system for college cultural and tech events.", tags: ["Python", "Django", "SQL"], gradient: "from-violet-600 to-indigo-600" }
+                                 { 
+                    title: "Lost & Found App", 
+                    desc: "A web platform to report and recover lost items securely and efficiently.", 
+                    tags: ["HTML", "CSS", "JS"], 
+                    gradient: "from-teal-500 to-cyan-500",
+                    link: "https://lostandfound.liveblog365.com/?i=1" // REPLACE THIS LINK
+                },
+                { 
+                    title: "Password Strengthener", 
+                    desc: "Security tool that analyzes and improves password complexity.", 
+                    tags: ["JavaScript", "Security", "Algorithms"], 
+                    gradient: "from-emerald-500 to-green-500",
+                    link: "https://sudalai2321-devs.github.io/Password-Mentor/" // REPLACE THIS LINK
+                },
+                { 
+                    title: "Techura Symposium", 
+                    desc: "Official registration portal for the college technical symposium.", 
+                    tags: ["Event", "Forms", "Registration"], 
+                    gradient: "from-purple-600 to-pink-600",
+                    link: "https://sudalai2321-devs.github.io/techura/" // REPLACE THIS LINK
+                },
+                { 
+                    title: "Ideathon Registration", 
+                    desc: "Streamlined event registration system for student innovation ideathons.", 
+                    tags: ["Web", "Innovation", "Design"], 
+                    gradient: "from-orange-500 to-yellow-500",
+                    link: "https://sudalai2321-devs.github.io/Ideathon/" // REPLACE THIS LINK
+                },
+                { 
+                    title: "Devotional Site", 
+                    desc: "Upcoming spiritual platform connecting communities (Work in Progress).", 
+                    tags: ["Future Project", "Community"], 
+                    gradient: "from-indigo-600 to-blue-600",
+                    link: "https://github.com/yourusername/devotional-site" // REPLACE THIS LINK
+                }
             ];
 
             const projectsGrid = document.getElementById('projects-grid');
             if(projectsGrid) {
                 projectsData.forEach(project => {
                     const div = document.createElement('div');
-                    div.className = `group relative rounded-3xl overflow-hidden border transition-all duration-500 hover:shadow-2xl hover:shadow-violet-500/20 bg-white border-slate-200 hover:border-slate-300 shadow-xl dark:bg-[#0a0a1f] dark:border-white/10 dark:hover:border-white/20`;
+                    // Added cursor-pointer and onclick to the whole card to make the entire card clickable
+                    div.className = `group relative rounded-3xl overflow-hidden border transition-all duration-500 hover:shadow-2xl hover:shadow-violet-500/20 bg-white border-slate-200 hover:border-slate-300 shadow-xl dark:bg-[#0a0a1f] dark:border-white/10 dark:hover:border-white/20 cursor-pointer`;
+                    
+                    // Add click event to open link in new tab
+                    div.onclick = () => window.open(project.link, '_blank');
+
                     div.innerHTML = `
                         <div class="h-56 bg-gradient-to-br ${project.gradient} p-8 flex items-center justify-center relative overflow-hidden">
                             <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-30 mix-blend-overlay"></div>
@@ -721,9 +899,10 @@
                             <div class="flex flex-wrap gap-2 mb-6">
                                 ${project.tags.map(tag => `<span class="px-3 py-1 text-xs font-medium rounded-full border bg-slate-100 text-slate-600 border-slate-200 dark:bg-white/5 dark:text-gray-300 dark:border-white/10">${tag}</span>`).join('')}
                             </div>
-                            <a href="#" class="inline-flex items-center text-sm font-bold uppercase tracking-wider transition-colors text-slate-900 hover:text-cyan-600 dark:text-white dark:hover:text-cyan-400">
-                                Details <i data-lucide="external-link" class="ml-2 w-3 h-3"></i>
-                            </a>
+                            <!-- Link is now handled by the parent div click, but we keep the visual button -->
+                            <span class="inline-flex items-center text-sm font-bold uppercase tracking-wider transition-colors text-slate-900 group-hover:text-cyan-600 dark:text-white dark:group-hover:text-cyan-400">
+                                View Project <i data-lucide="external-link" class="ml-2 w-3 h-3"></i>
+                            </span>
                         </div>
                     `;
                     projectsGrid.appendChild(div);
@@ -736,6 +915,3 @@
     </script>
 </body>
 </html>
-
-
-
