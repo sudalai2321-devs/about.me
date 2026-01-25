@@ -747,69 +747,52 @@
                 const chatMessages = document.getElementById('chatMessages');
                 chatMessages.scrollTop = chatMessages.scrollHeight;
 
-                try {
-                    // ---------------------------------------------------------
-                    // PASTE YOUR GEMINI API KEY BELOW (Inside the quotes)
-                    // Example: const apiKey = "AIzaSy...";
-                    // ---------------------------------------------------------
-                    const apiKey = "AIzaSyApcsxRiwKIE22iZzFS5BLkAtpNhnjgIvQ"; 
-                    
-                    if (apiKey === "PASTE_YOUR_GEMINI_API_KEY_HERE" || apiKey === "") {
-                        chatLoading.classList.add('hidden');
-                        addMessage("⚠️ Please open the index.html file and replace 'PASTE_YOUR_GEMINI_API_KEY_HERE' with your actual Google Gemini API Key to enable the chatbot.", 'bot');
-                        return;
-                    }
+// --- Updated Chat Logic (Paste inside your chatForm submit listener) ---
+chatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const text = chatInput.value.trim();
+    if (!text) return;
 
-                    const personalData = {
-                        name: "Sudalai S",
-                        role: "Full Stack Developer & IT Dept Secretary",
-                        email: "sudalai2321@gmail.com",
-                        phone: "9791557351",
-                        education: "B.Tech in Information Technology at Dhanalakshmi Srinivasan University (Semester 3, Admission 2024-2025)",
-                        skills: "Python (Advanced Diploma), C, C++, Lua Scripting (MTA), SQL, MTA Server Management, HTML/CSS, Communication, Leadership",
-                        location: "Thoothukudi, Tamil Nadu, India",
-                        about: "I am a passionate developer, Event Organizer, and the Secretary of the IT Department. I specialize in Python, MTA Game Development (Lua & Server Management), and SQL."
-                    };
+    addMessage(text, 'user');
+    chatInput.value = '';
+    
+    chatLoading.classList.remove('hidden');
+    const chatMessages = document.getElementById('chatMessages');
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 
-                    const systemPrompt = `You are 'Talk with Sudalai', a highly intelligent and witty AI assistant on Sudalai S's personal portfolio website.
-                    CONTEXT:
-                    - Name: ${personalData.name}
-                    - Role: ${personalData.role}
-                    - Education: ${personalData.education}
-                    - Contact: ${personalData.email}, ${personalData.phone}
-                    - Skills: ${personalData.skills}
-                    - Location: ${personalData.location}
-                    - About: ${personalData.about}
-                    If the user says "Hello" or "Hi", greet them warmly and mention you are Sudalai's digital assistant.`;
+    try {
+        // 1. USE YOUR ACTUAL KEY HERE
+        const apiKey = "AIzaSyApcsxRiwKIE22iZzFS5BLkAtpNhnjgIvQ"; 
+        
+        // 2. Updated to Stable Gemini 1.5 Flash
+        const apiURL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
-                    const response = await fetch(
-                        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
-                        {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                contents: [{ parts: [{ text }] }],
-                                systemInstruction: { parts: [{ text: systemPrompt }] }
-                            })
-                        }
-                    );
+        const response = await fetch(apiURL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: text }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] }
+            })
+        });
 
-                    const data = await response.json();
-                    chatLoading.classList.add('hidden');
+        const data = await response.json();
+        chatLoading.classList.add('hidden');
 
-                    if (data.candidates && data.candidates[0].content) {
-                        const aiResponse = data.candidates[0].content.parts[0].text;
-                        addMessage(aiResponse, 'bot');
-                    } else {
-                        addMessage("I'm having trouble connecting right now. Please try again later.", 'bot');
-                    }
+        if (data.candidates && data.candidates[0].content) {
+            const aiResponse = data.candidates[0].content.parts[0].text;
+            addMessage(aiResponse, 'bot');
+        } else {
+            console.error("API Error:", data);
+            addMessage("I'm having trouble connecting right now. Please try again later.", 'bot');
+        }
 
-                } catch (error) {
-                    console.error(error);
-                    chatLoading.classList.add('hidden');
-                    addMessage("My brain is currently upgrading! Please try again in a moment.", 'bot');
-                }
-            });
+    } catch (error) {
+        console.error("Fetch Error:", error);
+        chatLoading.classList.add('hidden');
+        addMessage("My brain is currently upgrading! Please try again in a moment.", 'bot');
+    }
+});
 
             // Data Injection (Skills & Projects)
             const skillsData = [
@@ -916,6 +899,7 @@
     </script>
 </body>
 </html>
+
 
 
 
