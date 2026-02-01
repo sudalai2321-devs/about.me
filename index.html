@@ -279,19 +279,18 @@
     </div>
 
     <script>
-        // --- 1. System Prompt & Config ---
+// --- 1. System Prompt & Config ---
         const systemPrompt = "You are the personal AI assistant for Sudalai S, a B.Tech IT student at Dhanalakshmi Srinivasan University. You are helpful, professional, and knowledgeable about his skills (Python, Full Stack, C++). Keep answers concise.";
         const apiKey = "AIzaSyDVqpnHxXcME4twUbC5DlUlDtJevbfmK_0"; 
 
         // --- 2. Initialize Logic ---
         document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons(); // Fix icons
-            applyTheme(); // Fix background & Theme
-            typeEffect(); // Start typing
-            injectSkills(); // Load skills
-            injectProjects(); // Load projects
+            lucide.createIcons(); 
+            applyTheme(); 
+            typeEffect(); 
+            injectSkills(); 
+            injectProjects(); 
             
-            // Re-run icons slightly later to catch any dynamically injected content
             setTimeout(() => lucide.createIcons(), 150);
         });
 
@@ -310,18 +309,12 @@
             initVanta(isDark);
         };
 
-        // Initialize Vanta Globe
         function initVanta(dark) {
-            // Background Colors: Light (Slate-50) vs Dark (Black)
             const bgColor = dark ? 0x020205 : 0xf8fafc;
-            
             try {
-                if (vantaEffect) {
-                    vantaEffect.destroy(); // Destroy old instance to prevent duplicates
-                }
-                
+                if (vantaEffect) vantaEffect.destroy();
                 vantaEffect = VANTA.GLOBE({
-                    el: "#vanta-bg", // Target the fixed div
+                    el: "#vanta-bg",
                     mouseControls: true,
                     touchControls: true,
                     gyroControls: false,
@@ -331,8 +324,8 @@
                     scaleMobile: 1.00,
                     size: 1.20,
                     backgroundColor: bgColor,
-                    color: 0x06b6d4, // Cyan globe lines
-                    color2: 0xd946ef // Fuchsia accents
+                    color: 0x06b6d4,
+                    color2: 0xd946ef
                 });
             } catch (e) {
                 console.error("Vanta failed to load:", e);
@@ -358,7 +351,6 @@
             const text = chatInput.value.trim();
             if (!text) return;
 
-            // User Message
             addMessage(text, 'user');
             chatInput.value = '';
             chatLoading.classList.remove('hidden');
@@ -369,8 +361,18 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: text }] }],
-                        systemInstruction: { parts: [{ text: systemPrompt }] }
+                        contents: [{ 
+                            role: "user",
+                            parts: [{ text: text }] 
+                        }],
+                        systemInstruction: { 
+                            role: "user", 
+                            parts: [{ text: systemPrompt }] 
+                        },
+                        generationConfig: {
+                            temperature: 0.7,
+                            maxOutputTokens: 250
+                        }
                     })
                 });
 
@@ -381,11 +383,12 @@
                     const aiText = data.candidates[0].content.parts[0].text;
                     addMessage(aiText, 'bot');
                 } else {
-                    addMessage("I'm having trouble connecting. Please try again.", 'bot');
+                    console.error("API Error Response:", data);
+                    addMessage("I'm having trouble connecting. Please check your API key status.", 'bot');
                 }
 
             } catch (error) {
-                console.error(error);
+                console.error("Connection Error:", error);
                 chatLoading.classList.add('hidden');
                 addMessage("Error connecting to AI.", 'bot');
             }
@@ -407,7 +410,6 @@
             chatMessages.appendChild(div);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
-
         // --- 5. Content Injection ---
         function injectSkills() {
             const skills = [
@@ -471,4 +473,5 @@
     </script>
 </body>
 </html>
+
 
